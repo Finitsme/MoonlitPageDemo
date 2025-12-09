@@ -200,7 +200,7 @@ app.get("/feed", async (req, res) => {
     try {
         const memberEmail = req.session.user ? req.session.user.email : null; 
 
-        // --- NEW: 1. ดึง ID และยอด Like ของโพสต์ยอดนิยม 3 อันดับแรก ---
+        // NEW ดึง ID และยอด Like ของโพสต์ยอดนิยม 3 อันดับแรก 
         const [topPostIds] = await db.query(
             `SELECT 
                 fp.post_id,
@@ -244,8 +244,6 @@ app.get("/feed", async (req, res) => {
             // เรียงลำดับอีกครั้งตาม likeCount 
             topPosts.sort((a, b) => b.likeCount - a.likeCount);
         }
-        // --- END NEW: ดึง Top 3 ---
-
 
         // 2. ดึงโพสต์ล่าสุดจากตาราง FeedPost (สำหรับ Main Feed)
         const [postRows] = await db.query(
