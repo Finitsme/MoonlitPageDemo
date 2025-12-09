@@ -198,86 +198,142 @@ app.get("/book", async (req, res) => {
 
 app.get("/feed", async (req, res) => {
     try {
-        // 1. ดึงโพสต์ล่าสุดจากตาราง FeedPost
+        const memberEmail = req.session.user ? req.session.user.email : null; 
+
+        // --- NEW: 1. ดึง ID และยอด Like ของโพสต์ยอดนิยม 3 อันดับแรก ---
+        const [topPostIds] = await db.query(
+            `SELECT 
+                fp.post_id,
+                COUNT(pl.post_id) AS likeCount
+            FROM FeedPost fp
+            LEFT JOIN PostLike pl ON fp.post_id = pl.post_id
+            GROUP BY fp.post_id
+            ORDER BY likeCount DESC
+            LIMIT 3`
+        );
+        
+        let topPosts = [];
+        let topPostsWithInfo = []; 
+        
+        if (topPostIds.length > 0) {
+            const topIds = topPostIds.map(p => p.post_id);
+            const placeholders = topIds.map(() => '?').join(',');
+            
+            // ดึงข้อมูลโพสต์แบบเต็มสำหรับ Top 3 IDs
+            const [rawTopPosts] = await db.query(
+                `SELECT 
+                    fp.*, 
+                    m.username_display, 
+                    m.profile_pic_url,
+                    m.username
+                 FROM FeedPost fp 
+                 JOIN Member m ON fp.member_email = m.email 
+                 WHERE fp.post_id IN (${placeholders})`,
+                topIds
+            );
+            
+            // รวมยอด Like เข้ากับข้อมูลโพสต์เต็ม
+            topPosts = rawTopPosts.map(post => {
+                const matchingId = topPostIds.find(p => p.post_id === post.post_id);
+                return {
+                    ...post,
+                    likeCount: matchingId ? matchingId.likeCount : 0 
+                };
+            });
+            
+            // เรียงลำดับอีกครั้งตาม likeCount 
+            topPosts.sort((a, b) => b.likeCount - a.likeCount);
+        }
+        // --- END NEW: ดึง Top 3 ---
+
+
+        // 2. ดึงโพสต์ล่าสุดจากตาราง FeedPost (สำหรับ Main Feed)
         const [postRows] = await db.query(
             `SELECT 
-    fp.*, 
-    m.username_display, 
-    m.profile_pic_url,
-    m.username,
-    fp.post_id
-FROM FeedPost fp 
-JOIN Member m ON fp.member_email = m.email 
-ORDER BY fp.like_count DESC, fp.created_at DESC 
-LIMIT 50`
+                fp.*, 
+                m.username_display, 
+                m.profile_pic_url,
+                m.username,
+                fp.post_id
+             FROM FeedPost fp 
+             JOIN Member m ON fp.member_email = m.email 
+             ORDER BY fp.created_at DESC 
+             LIMIT 50`
         );
 
-        // 2. ดึงข้อมูลชั้นหนังสือของผู้ใช้ (สำหรับ Modal)
+        // 3. ดึงข้อมูลชั้นหนังสือของผู้ใช้ (สำหรับ Modal)
         let bookshelf = [];
         if (req.session.user) {
-            const memberEmail = req.session.user.email;
             const [shelfRows] = await db.query("SELECT * FROM BookShelf WHERE member_email = ? ORDER BY date_added DESC", [memberEmail]);
             bookshelf = shelfRows;
         }
 
-        // 3. ดึงชื่อหนังสือ, สถานะ Like, และจำนวน Like สำหรับโพสต์
-        const postsWithBookInfo = await Promise.all(postRows.map(async (post) => {
-            // ดึงจำนวน Comment เท่านั้น (เพราะ Like Count ถูกดึงมาแล้วใน Query หลัก)
-            const [commentCountRows] = await db.query("SELECT COUNT(*) AS count FROM Comment WHERE post_id = ?", [post.post_id]);
-            const commentCount = commentCountRows[0].count;
-            
-            // ดึงรายการ Comment ล่าสุดสำหรับ Modal
-            const [comments] = await db.query(
-                `SELECT c.*, m.username_display, m.username, m.profile_pic_url 
-                 FROM Comment c
-                 JOIN Member m ON c.member_email = m.email
-                 WHERE c.post_id = ?
-                 ORDER BY c.created_at ASC
-                 LIMIT 5`, 
-                [post.post_id]
-            );
+        // 4. สร้างฟังก์ชันประมวลผลโพสต์เพื่อหลีกเลี่ยงการทำซ้ำโค้ด
+        const processPosts = async (posts) => {
+            return await Promise.all(posts.map(async (post) => {
+                
+                let likeCount = post.likeCount !== undefined ? post.likeCount : 0; 
 
-            let bookTitle = 'ไม่ระบุหนังสือ'; 
-            let bookId = post.book_id; 
+                // ดึงชื่อหนังสือ
+                let bookTitle = 'ไม่ระบุหนังสือ'; 
+                let bookId = post.book_id;
+                if (bookId) {
+                  const bookData = await searchOpenLibraryBooks(bookId); 
+                  if (bookData && bookData.length > 0) {
+                    bookTitle = bookData[0].title;
+                  }
+                }
+                
+                // ดึงสถานะ Like และจำนวน Comment
+                if (post.likeCount === undefined) { 
+                    const [likeCountRow] = await db.query("SELECT COUNT(*) AS count FROM PostLike WHERE post_id = ?", [post.post_id]);
+                    likeCount = likeCountRow[0].count;
+                }
+                const [commentCountRow] = await db.query("SELECT COUNT(*) AS count FROM Comment WHERE post_id = ?", [post.post_id]);
+                const commentCount = commentCountRow[0].count;
+                
+                let isLiked = false;
+                let isBookmarked = false;
+                if (memberEmail) {
+                    const [userLiked] = await db.query("SELECT 1 FROM PostLike WHERE post_id = ? AND member_email = ?", [post.post_id, memberEmail]);
+                    isLiked = userLiked.length > 0;
+                    const [userBookmarked] = await db.query("SELECT 1 FROM PostBookmark WHERE post_id = ? AND member_email = ?", [post.post_id, memberEmail]);
+                    isBookmarked = userBookmarked.length > 0;
+                }
 
-            // สมมติว่า searchOpenLibraryBooks สามารถรับ book_id ได้
-            if (bookId) {
-              const bookData = await searchOpenLibraryBooks(bookId);
-              if (bookData && bookData.length > 0) {
-                bookTitle = bookData[0].title;
-              }
-            }
+                // ดึงรายการ Comment ล่าสุด
+                const [comments] = await db.query(
+                    `SELECT c.*, m.username_display, m.username, m.profile_pic_url 
+                     FROM Comment c
+                     JOIN Member m ON c.member_email = m.email
+                     WHERE c.post_id = ?
+                     ORDER BY c.created_at ASC
+                     LIMIT 5`, 
+                    [post.post_id]
+                );
 
-            let isLiked = false;
-            let isBookmarked = false;
-
-            
-            if (req.session.user) {
-                // เช็คสถานะ Like
-                const [userLiked] = await db.query("SELECT 1 FROM PostLike WHERE post_id = ? AND member_email = ?", [post.post_id, req.session.user.email]);
-                isLiked = userLiked.length > 0;
-
-                // Check Bookmark Status
-                const [userBookmarked] = await db.query("SELECT 1 FROM PostBookmark WHERE post_id = ? AND member_email = ?", [post.post_id, req.session.user.email]);
-                isBookmarked = userBookmarked.length > 0;
-            }
-
-            return {
-                ...post,
-                likeCount: post.like_count, // <--- ใช้ค่าที่ดึงมาใน Query หลัก
-                bookTitle: bookTitle, 
-                bookId: bookId,
-                commentCount: commentCount,
-                isLiked: isLiked,
-                isBookmarked: isBookmarked,
-                comments: comments
-            };
-        }));
-
+                return {
+                    ...post,
+                    bookTitle: bookTitle,
+                    likeCount: likeCount,
+                    commentCount: commentCount,
+                    isLiked: isLiked,
+                    isBookmarked: isBookmarked,
+                    comments: comments
+                };
+            }));
+        };
+        
+        // ประมวลผล Top Posts และ Main Feed
+        topPostsWithInfo = await processPosts(topPosts);
+        const postsWithBookInfo = await processPosts(postRows);
+        
+        // 5. Render หน้า Feed
         res.render("feed", {
             title: "Review Feed | MOONLITPAGE",
             user: req.session.user,
             reviews: postsWithBookInfo, 
+            topPosts: topPostsWithInfo, // 💡 ส่งข้อมูล Top 3 ไปยัง EJS
             bookshelf: bookshelf
         });
 

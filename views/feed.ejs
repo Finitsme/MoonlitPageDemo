@@ -2,8 +2,9 @@
 <%-include('partials/navbar', { user: locals.user }) %>
 
 <main class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-7">
+  <div class="row">
+    
+    <div class="col-lg-8">
       <h1 class="mb-4 text-center">Review Feed</h1>
 
       <% if (user) { %>
@@ -49,9 +50,9 @@
         ยังไม่มีรีวิวถูกโพสต์ กรุณาโพสต์รีวิวแรกของคุณ!
       </div>
       <% } else { %> <% reviews.forEach(review => { %> <% const postId =
-      review.post_id || review.review_id; const isLiked = review.isLiked ||
-      false; const likeCount = review.likeCount || 0; const isBookmarked =
-      review.isBookmarked || false; %>
+      review.post_id; const isLiked = review.isLiked || false; const likeCount =
+      review.likeCount || 0; const isBookmarked = review.isBookmarked || false;
+      %>
       <div class="card mb-3 shadow-sm review-card">
         <div
           class="card-body"
@@ -142,11 +143,44 @@
               data-interaction-type="BOOKMARK"
             >
               <i class="fa<%= isBookmarked ? 's' : 'r' %> fa-bookmark"></i>
+              Bookmark
             </button>
           </div>
         </div>
       </div>
       <% }); %> <% } %>
+    </div>
+    
+    <div class="col-lg-4 d-none d-lg-block">
+        <div class="card shadow-sm p-3 sticky-top" style="top: 20px;">
+            <h5 class="card-title text-primary mb-3">🏆 Top 3 โพสต์ยอดนิยม</h5>
+            
+            <% if (topPosts && topPosts.length > 0) { %>
+                <ul class="list-group list-group-flush">
+                    <% topPosts.forEach((post, index) => { %>
+                        <li class="list-group-item d-flex justify-content-between align-items-center p-2">
+                            <div>
+                                <span class="badge <%= index === 0 ? 'bg-warning' : index === 1 ? 'bg-secondary' : 'bg-info' %> me-2">#<%= index + 1 %></span>
+                                <a 
+                                    href="/feed?open_post=<%= post.post_id %>" 
+                                    class="text-decoration-none text-dark"
+                                    title="<%= post.content %>"
+                                >
+                                    <%= post.content.substring(0, 40) %>...
+                                </a>
+                                <p class="m-0 small text-muted">โดย: @<%= post.username_display || post.username %></p>
+                            </div>
+                            <span class="ms-2">
+                                <i class="fas fa-heart text-danger me-1"></i> 
+                                <strong class="text-danger"><%= post.likeCount %></strong>
+                            </span>
+                        </li>
+                    <% }); %>
+                </ul>
+            <% } else { %>
+                <p class="text-muted small">ยังไม่มีโพสต์ที่มีไลค์มากพอสำหรับจัดอันดับ</p>
+            <% } %>
+        </div>
     </div>
   </div>
 </main>
@@ -202,9 +236,7 @@
   </div>
 </div>
 
-<% reviews.forEach(review => { %> <% const postId = review.post_id ||
-review.review_id; const isLiked = review.isLiked || false; const isBookmarked =
-review.isBookmarked || false; %>
+<% reviews.forEach(review => { %> <% const postId = review.post_id; const isLiked = review.isLiked || false; const isBookmarked = review.isBookmarked || false; %>
 <div class="modal fade" id="fullPostModal<%= postId %>" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
@@ -252,7 +284,7 @@ review.isBookmarked || false; %>
           <i class="fas fa-book me-2"></i>
           **ป้ายยา:**
           <a
-            href="/book?q=<%= encodeURIComponent(review.book_id) %>" //ป้องกันปัญหาชื่อหนังสือหรือค่าที่มีช่องว่าง, อีโมจิ, อักษรไทย, เครื่องหมายพิเศษ
+            href="/book?q=<%= encodeURIComponent(review.book_id) %>"
             class="text-decoration-none text-info"
           >
             <%= review.bookTitle %>
@@ -347,19 +379,19 @@ review.isBookmarked || false; %>
     // query like-button, bookmark-button
     const actionButtons = document.querySelectorAll(
       ".like-button, .bookmark-button"
-    ); //อให้ HTML ของหน้าเว็บโหลดเสร็จทั้งหมดก่อนที่จะรันโค้ด JavaScript
+    ); 
 
     // วนลูปปุ่มทั้งหมด
     actionButtons.forEach((button) => {
       button.addEventListener("click", async function (e) {
-        e.preventDefault(); // ป้องกันการทำงานเริ่มต้นของปุ่ม
-        e.stopPropagation(); // หยุด Event Bubbling
+        e.preventDefault(); 
+        e.stopPropagation(); 
 
-        const type = this.dataset.interactionType; // ดึงชนิด like/bookmark
-        const postId = this.dataset.postId; // ดึง postId
+        const type = this.dataset.interactionType; 
+        const postId = this.dataset.postId; 
         const partnerButtons = document.querySelectorAll(
           `[data-post-id="${postId}"][data-interaction-type="${type}"]`
-        ); // query ปุ่มที่มี postId และ type เหมือนกัน
+        ); 
 
         // เช็คว่า user ล็อกอินอยู่มั้ย
         if (!"<%= locals.user ? true : false %>") {
@@ -376,20 +408,20 @@ review.isBookmarked || false; %>
               body: JSON.stringify({ postId: postId }),
             });
 
-            const data = await response.json(); // แปลง response ให้เป็น json
+            const data = await response.json(); 
 
             if (data.success) {
               // วนลูป update สถานะของปุ่ม like
               partnerButtons.forEach((btn) => {
-                const icon = btn.querySelector("i"); // icon หัวใจ
-                const likeCountSpan = btn.querySelector(".like-count"); // จำนวน like
+                const icon = btn.querySelector("i"); 
+                const likeCountSpan = btn.querySelector(".like-count"); 
 
                 // ถ้ากด like แล้ว
                 if (data.action === "liked") {
                   btn.classList.remove("btn-outline-secondary", "text-muted");
                   btn.classList.add("btn-danger");
                   icon.classList.remove("far"); 
-                  icon.classList.add("fas"); // เปลี่ยนจาก outline เป็น solid
+                  icon.classList.add("fas"); 
                   // update like count +1
                   if (likeCountSpan)
                     likeCountSpan.textContent =
@@ -398,7 +430,7 @@ review.isBookmarked || false; %>
                   btn.classList.remove("btn-danger", "text-danger");
                   btn.classList.add("btn-outline-secondary", "text-muted");
                   icon.classList.remove("fas"); 
-                  icon.classList.add("far"); // เปลี่ยนกลับเป็น outline
+                  icon.classList.add("far"); 
                   // update like count -1
                   if (likeCountSpan)
                     likeCountSpan.textContent =
@@ -437,13 +469,13 @@ review.isBookmarked || false; %>
                   btn.classList.remove("btn-outline-secondary", "text-muted");
                   btn.classList.add("btn-info");
                   icon.classList.remove("far");
-                  icon.classList.add("fas"); // เปลี่ยนจาก outline เป็น solid
+                  icon.classList.add("fas"); 
                   // ถ้ากด remove bookmark
                 } else if (data.action === "removed") {
                   btn.classList.remove("btn-info");
                   btn.classList.add("btn-outline-secondary", "text-muted");
                   icon.classList.remove("fas");
-                  icon.classList.add("far"); // เปลี่ยนกลับเป็น outline 
+                  icon.classList.add("far"); 
                 }
               });
             } else {
@@ -462,15 +494,15 @@ review.isBookmarked || false; %>
     });
 
     // COMMENT
-    document.querySelectorAll(".comment-form-modal").forEach((form) => { // ค้นหา comment form
+    document.querySelectorAll(".comment-form-modal").forEach((form) => { 
       form.addEventListener("submit", async function (e) {
-        e.preventDefault(); // ป้องกันการโหลดหน้าใหม่
+        e.preventDefault(); 
 
-        const postId = this.dataset.postId; // ดึง postId
-        const contentInput = this.querySelector(".comment-input"); // เก็บ input comment
-        const content = contentInput.value.trim(); // ดึงข้อความ comment + ลบช่องว่าง
+        const postId = this.dataset.postId; 
+        const contentInput = this.querySelector(".comment-input"); 
+        const content = contentInput.value.trim(); 
 
-        if (!content) return; // ไม่ส่งถ้าไม่มี content
+        if (!content) return; 
 
         // เช็คว่า user ล็อกอินอยู่มั้ย
         if (!"<%= locals.user ? true : false %>") {
@@ -490,13 +522,13 @@ review.isBookmarked || false; %>
 
           if (data.success) {
             const commentsList = document.getElementById(
-              `commentsList${postId}` // ค้นหา commentList
+              `commentsList${postId}` 
             );
             const modalCountSpan = document.getElementById(
-              `modalCommentCount${postId}` // ค้นหาตัวนับ comment ใน modal
+              `modalCommentCount${postId}` 
             );
             const feedCountSpans = document.querySelectorAll(
-              `.review-card [data-post-id="${postId}"] .comment-count` // ค้นหาตัวนับ comment ใน feed card
+              `.review-card [data-post-id="${postId}"] .comment-count` 
             );
 
             // สร้าง comment 
@@ -535,9 +567,9 @@ review.isBookmarked || false; %>
             commentsList.insertAdjacentHTML("beforeend", newCommentHtml);
 
             // อัปเดตจำนวน Comment
-            if (modalCountSpan) // ใน modal
+            if (modalCountSpan) 
               modalCountSpan.textContent = data.newCommentCount;
-            feedCountSpans.forEach( // ใน feed
+            feedCountSpans.forEach( 
               (span) => (span.textContent = data.newCommentCount)
             );
 
