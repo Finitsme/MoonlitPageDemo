@@ -1,0 +1,103 @@
+<%- include('partials/header', { title: "หน้าหลัก | MOONLITPAGE" }) %> 
+<%- include('partials/navbar', { user: locals.user }) %>
+
+<div class="container-fluid p-0">
+  <img src="/images/Banner1.png" class="banner" alt="Moonlit Pages Banner" />
+</div>
+
+<div class="container">
+  <div class="welcome-section">
+    <div class="text-center">
+      <h2 class="mb-4">
+        ยินดีต้อนรับสู่ MOONLITPAGE – ชุมชนออนไลน์ของคนรักการอ่าน
+      </h2>
+
+      <p class="lead mb-4">
+        ที่นี่ไม่ใช่แค่ห้องสมุดธรรมดา แต่เป็นพื้นที่ที่นักอ่านทุกคนมารวมตัวกัน
+        คุณสามารถ:
+      </p>
+
+      <div class="row">
+        <div class="col-md-6 offset-md-3">
+          <div class="feature-item">
+            <i class="fas fa-book feature-icon"></i>
+            <span
+              ><strong>ยืมหนังสือออนไลน์</strong> – เลือกหนังสือที่คุณสนใจ
+              ยืมไปอ่านได้ง่ายๆ</span
+            >
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-share-alt feature-icon"></i>
+            <span
+              ><strong>แบ่งปันหนังสือให้คนอื่น</strong> –
+              ส่งต่อหนังสือที่คุณมีให้คนอื่นได้อ่านต่อ</span
+            >
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-comments feature-icon"></i>
+            <span
+              ><strong>พูดคุย & รีวิว</strong> – แลกเปลี่ยนความคิดเห็น
+              แนะนำเล่มที่ชอบ</span
+            >
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-users feature-icon"></i>
+            <span
+              ><strong>เชื่อมโยงเพื่อนนักอ่าน</strong> –
+              พบเพื่อนใหม่ที่มีรสนิยมการอ่านเหมือนกัน</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <p class="mt-4">
+        เราเชื่อว่าหนังสือไม่ควรถูกวางทิ้งไว้บนชั้น แต่ควรได้เดินทางไปหาคนใหม่ ๆ
+        ที่รักการอ่านเหมือนคุณ 💛
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="container my-3">
+  <div id="carouselExampleIndicators" class="carousel slide">
+    <div class="carousel-indicators">
+      <% for (let i = 0; i < 3; i++) { %>
+      <button
+        type="button"
+        data-bs-target="#carouselExampleIndicators"
+        data-bs-slide-to="<%= i %>"
+        class="<%= i === 0 ? 'active' : '' %>"
+      ></button>
+      <% } %>
+    </div>
+    <div class="carousel-inner rounded">
+      <div class="carousel-item active">
+        <img src="/images/Banner3.png" class="d-block w-100" />
+      </div>
+      <div class="carousel-item">
+        <img src="/images/Banner4.png" class="d-block w-100" />
+      </div>
+      <div class="carousel-item">
+        <img src="/images/Banner5.png" class="d-block w-100" />
+      </div>
+    </div>
+    <button
+      class="carousel-control-prev"
+      type="button"
+      data-bs-target="#carouselExampleIndicators"
+      data-bs-slide="prev"
+    >
+      <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button
+      class="carousel-control-next"
+      type="button"
+      data-bs-target="#carouselExampleIndicators"
+      data-bs-slide="next"
+    >
+      <span class="carousel-control-next-icon"></span>
+    </button>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

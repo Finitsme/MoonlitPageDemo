@@ -1,0 +1,94 @@
+<%- include('partials/header', { title: "ติดต่อเรา | MOONLITPAGE" }) %>
+<%- include('partials/navbar', { user: locals.user }) %>
+
+<div class="contact-page-content py-5">
+    <div class="container">
+        
+        <header class="text-center mb-5">
+            <h1 class="display-4 contact-title">ติดต่อ MOONLITPAGE</h1>
+            <p class="lead contact-subtitle">แบ่งปันความคิดเห็น สอบถาม หรือขอความช่วยเหลือจากเรา</p>
+        </header>
+
+        <div class="row">
+            
+            <div class="col-lg-5 mb-4 mb-lg-0">
+                <div class="contact-info-card p-4 h-100">
+                    <h3 class="card-title-contact mb-4">ข้อมูลติดต่อเรา</h3>
+                    
+                    <div class="contact-detail mb-4">
+                        <i class="fas fa-map-marker-alt contact-icon"></i>
+                        <div>
+                            <strong>ที่ตั้งสำนักงาน</strong>
+                            <p class="m-0">979 ถนนดวงจันทร์, เขตทางช้างเผือก</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-detail mb-4">
+                        <i class="fas fa-phone contact-icon"></i>
+                        <div>
+                            <strong>โทรศัพท์</strong>
+                            <p class="m-0">+66 2 345 6789 (จันทร์ - ศุกร์, 9:00 - 17:00 น.)</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-detail mb-5">
+                        <i class="fas fa-envelope contact-icon"></i>
+                        <div>
+                            <strong>อีเมลสนับสนุน</strong>
+                            <p class="m-0">info@moonlitpage.com</p>
+                        </div>
+                    </div>
+                    
+                    <h5 class="mb-3">ติดตามเราได้ที่</h5>
+                    <div class="social-icons contact-social">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="Youtube"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7">
+                <div class="contact-form-card p-4 h-100">
+                    <h3 class="card-title-contact mb-4">✉️ ส่งข้อความถึงเรา</h3>
+                    <form action="/contact" method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="name" class="form-label">ชื่อ-นามสกุล</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">อีเมล</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="subject" class="form-label">หัวข้อ</label>
+                            <select class="form-control" id="subject" name="subject" required>
+                                <option value="" disabled selected>--- เลือกหัวข้อติดต่อ ---</option>
+                                <option value="Suggestion">ข้อเสนอแนะทั่วไป</option>
+                                <option value="Technical Issue">ปัญหาทางเทคนิค/เว็บไซต์</option>
+                                <option value="Partnership">ติดต่อด้านธุรกิจ/โฆษณา</option>
+                                <option value="Other">อื่น ๆ</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="message" class="form-label">รายละเอียดข้อความ</label>
+                            <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-contact-submit w-100">
+                            <i class="fas fa-paper-plane me-2"></i> ส่งข้อความทันที
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

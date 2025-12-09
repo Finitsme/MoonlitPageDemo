@@ -1,0 +1,390 @@
+<%- include('partials/header', { title: profile.username_display + " | โปรไฟล์" }) %>
+<%- include('partials/navbar', { user: locals.user }) %>
+
+<main class="container py-5">
+  <div class="row">
+    <div class="col-lg-4 mb-4">
+      <div class="card shadow-sm p-4 text-center"> <%# card แสดงข้อมูล profile %>
+        <img
+          src="<%= profile.profile_pic_url || '/images/default_avatar.png' %>"
+          alt="Profile Picture"
+          class="rounded-circle mx-auto mb-3"
+          style="width: 120px; height: 120px; object-fit: cover"
+        />
+        <h3 class="mb-0">
+          <%= profile.username_display || profile.username %>
+        </h3>
+        <p class="text-muted small">@<%= profile.username %></p>
+
+        <div class="bio-section mb-4">
+          <% if (profile.bio) { %>
+          <p class="card-text"><%= profile.bio %></p>
+          <% } else { %>
+          <p class="text-muted fst-italic">ยังไม่มี Bio</p>
+          <% } %>
+        </div>
+
+        <button
+          class="btn btn-warning w-100 mb-2"
+          data-bs-toggle="modal"
+          data-bs-target="#editProfileModal" <%# เปิด modal id editProfileModal%>
+        >
+          <i class="fas fa-edit me-2"></i>แก้ไขโปรไฟล์
+        </button>
+      </div>
+
+      <div class="card shadow-sm p-3 mt-3"> <%# card สำหรับโพสต์รีวิว %>
+        <h5>รีวิว (Review)</h5>
+        <p class="text-muted small">เลือกหนังสือจากชั้นของคุณแล้วเขียนรีวิว</p>
+        <button
+          class="btn btn-info w-100"
+          data-bs-toggle="modal"
+          data-bs-target="#postReviewModal" <%# เปิด modal id postReviewModal %>
+        >
+          <i class="fas fa-pen me-2"></i> โพสต์
+        </button>
+      </div>
+    </div>
+
+    <div class="col-lg-8"> <%# สร้าง tab %>
+      <ul class="nav nav-tabs mb-4" id="profileTabs" role="tablist">
+        <li class="nav-item" role="presentation"> <%# tab bookshelf %>
+          <button
+            class="nav-link active"
+            id="bookshelf-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#bookshelf"
+            type="button"
+          >
+            <i class="fas fa-book-reader me-2"></i>ชั้นหนังสือของฉัน (<%=
+            bookshelf.length %>) <%# แสดง bookshelf.length %>
+          </button>
+        </li>
+        
+        <li class="nav-item" role="presentation"> <%# tab my post %>
+          <button
+            class="nav-link"
+            id="myposts-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#myposts"
+            type="button"
+          >
+            <i class="fas fa-feather-alt me-2"></i>โพสต์ของฉัน (<%=
+            reviews.length %>) <%# แสดง reviews.length %>
+          </button>
+        </li>
+        
+        <li class="nav-item" role="presentation"> <%# tab bookmark %>
+          <button
+            class="nav-link"
+            id="bookmarked-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#bookmarked-posts"
+            type="button"
+          >
+            <i class="fas fa-bookmark me-2"></i>บุ๊กมาร์ก (<%=
+            bookmarked_posts.length %>) <%# แสดง bookmarked_posts.length %>
+          </button>
+        </li>
+      </ul>
+
+      <div class="tab-content" id="profileTabsContent">
+        <div class="tab-pane fade show active" id="bookshelf">
+          <% if (bookshelf.length === 0) { %> <%# เช็คว่ามีหนังสือในคลังมั้ย %>
+          <p class="alert alert-info text-center">คุณยังไม่มีหนังสือในชั้น</p>
+          <% } else { %>
+          <div class="list-group">
+            <% bookshelf.forEach(book => { %> <%# วนลูปแสดงผลหนังสือ %>
+            <div
+              class="list-group-item d-flex justify-content-between align-items-center mb-2 shadow-sm"
+            >
+              <div class="me-3">
+                <h5>
+                  <a
+                    <%# ลิ้งค์ไป /book เพื่อเปิด modal ของหนังสือนั้นๆ %>
+                    href="/book?q=<%= encodeURIComponent(book.book_id) %>&show_modal=true" 
+                    class="text-decoration-none text-dark"
+                    ><%= book.title %></a
+                  >
+                </h5>
+                <p class="text-muted m-0 small">
+                  โดย: <%= book.author || 'ไม่ระบุ' %>
+                </p>
+              </div>
+
+              <%# update สถานะ (ซื้อแล้ว/อ่านแล้ว) %>
+              <form
+                action="/bookshelf/update"
+                method="POST"
+                class="d-flex align-items-center"
+              >
+                <input <%# ส่ง shelf_id ไปที่ server %>
+                  type="hidden"
+                  name="shelf_id"
+                  value="<%= book.shelf_id %>"
+                />
+
+                <div class="form-check me-3">
+                  <input class="form-check-input" type="checkbox"
+                  name="is_owned" id="owned<%= book.shelf_id %>" <%=
+                  book.is_owned ? 'checked' : '' %> <%# สถานะ checked ถูกกำหนดโดยค่า book.is_owned %>
+                  onchange="this.form.submit()"> <%# submit ฟอร์ม ทันที %>
+                  <label
+                    class="form-check-label"
+                    for="owned<%= book.shelf_id %>"
+                    >ซื้อแล้ว</label
+                  >
+                </div>
+
+                <div class="form-check me-4">
+                  <input class="form-check-input" type="checkbox" name="is_read"
+                  id="read<%= book.shelf_id %>" <%= book.is_read ? 'checked' :
+                  '' %> onchange="this.form.submit()">
+                  <label class="form-check-label" for="read<%= book.shelf_id %>"
+                    >อ่านแล้ว</label
+                  >
+                </div>
+              </form>
+
+              <%# ลบหนังสือ %>
+              <form
+                action="/bookshelf/delete/<%= book.shelf_id %>"
+                method="POST"
+              >
+                <button
+                  type="submit"
+                  class="btn btn-sm btn-danger"
+                  onclick="return confirm('คุณแน่ใจหรือไม่ว่าต้องการลบหนังสือออกจากชั้น?')"
+                >
+                  <i class="fas fa-trash"></i> ลบ
+                </button>
+              </form>
+            </div>
+            <% }); %>
+          </div>
+          <% } %>
+        </div>
+
+        <div class="tab-pane fade" id="myposts">
+          <% if (reviews.length === 0) { %>
+          <p class="alert alert-info text-center">คุณยังไม่ได้โพสต์/รีวิวอะไรเลย</p>
+          <% } else { %> 
+            <% reviews.forEach(post => { %>
+            <% 
+              const postId = post.post_id;
+            %>
+            <div class="list-group-item d-flex align-items-center mb-2 shadow-sm p-3">
+              <div class="me-3">
+                <i class="fas fa-feather-alt text-secondary me-2"></i>
+              </div>
+              <div>
+                <h6 class="mb-0 text-dark">
+                  <%= post.content.substring(0, 80) %>...
+                  <%# แสดง content 80 ตัวอักษรแรก %>
+                </h6>
+                <p class="text-muted m-0 small">
+                  <% if (post.book_id) { %>
+                    <i class="fas fa-book me-1"></i> (รีวิวหนังสือ) 
+                  <% } else { %>
+                    (โพสต์ทั่วไป)
+                  <% } %>
+                  เมื่อ: <%= new Date(post.created_at).toLocaleDateString('th-TH') %>
+
+                  <%# แสดงจำนวน like %>
+                  <% if (post.likeCount !== undefined) { %>
+                    <span class="ms-3">
+                        <i class="fas fa-heart text-danger me-1"></i> 
+                        <%= post.likeCount %> ไลค์
+                    </span>
+                  <% } %>
+                </p>
+              </div>
+                
+              
+              <div class="ms-auto">
+                <%# ลิ้งค์ไปที่ /feed เปิด modal ของโพสต์นั้นๆ %>
+                <a href="/feed?open_post=<%= postId %>" class="btn btn-sm btn-outline-secondary">ดูโพสต์</a>
+              </div>
+            </div>
+            <% }); %> 
+          <% } %>
+        </div>
+
+        <div class="tab-pane fade" id="bookmarked-posts">
+          <% if (bookmarked_posts.length === 0) { %>
+          <p class="alert alert-info text-center">
+            คุณยังไม่ได้บุ๊กมาร์กโพสต์ใด ๆ เลย
+          </p>
+          <% } else { %>
+          <div class="list-group">
+            <% bookmarked_posts.forEach(post => { %>
+            <% 
+              const postId = post.post_id; 
+            %>
+            <div
+              class="list-group-item d-flex align-items-center mb-2 shadow-sm p-3"
+            >
+              <div class="me-3">
+                <i class="fas fa-bookmark text-primary me-2"></i>
+              </div>
+              <div>
+                <h6 class="mb-0 text-dark">
+                  <%= post.content.substring(0, 80) %>...
+                </h6>
+                <p class="text-muted m-0 small">
+                  โพสต์โดย: <%= post.username_display %>
+                </p>
+              </div>
+              <div class="ms-auto">
+                <a href="/feed?open_post=<%= postId %>" class="btn btn-sm btn-outline-secondary">ดูโพสต์</a>
+              </div>
+            </div>
+            <% }); %>
+          </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%# แก้ไข profile %>
+<div class="modal fade" id="editProfileModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">แก้ไขโปรไฟล์</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <form
+        action="/profile/update" <%# ฟอร์ม update profile %>
+        method="POST"
+        enctype="multipart/form-data" <%# รองรับไฟล์รูปภาพ %>
+      >
+        <div class="modal-body">
+          <div class="mb-3 text-center">
+            <img
+              src="<%= profile.profile_pic_url || '/images/default_avatar.png' %>"
+              alt="Current Profile Picture"
+              class="rounded-circle mb-2"
+              style="width: 100px; height: 100px; object-fit: cover"
+            />
+            <input <%# ช่องสำหรับอัปรูปภาพ %>
+              type="file"
+              name="profile_pic"
+              class="form-control"
+              accept="image/*"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">ชื่อที่แสดง (Username)</label>
+            <input <%# ช่องสำหรับแก้ไข username %>
+              type="text"
+              name="username_display"
+              class="form-control"
+              value="<%= profile.username_display || profile.username %>"
+              required
+            />
+          </div>
+          <div class="mb-3"> <%# textarea สำหรับเขียน bio %>
+            <label class="form-label">Bio (เกี่ยวกับฉัน)</label>
+            <textarea name="bio" class="form-control" rows="3"><%= profile.bio || '' %></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            ยกเลิก
+          </button>
+          <button type="submit" class="btn btn-primary">บันทึก</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%# review post %>
+<div class="modal fade" id="postReviewModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">โพสต์รีวิว/ความคิดเห็น</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <form action="/review/post" method="POST"> <%# ฟอร์มสำหรับส่งข้อมูล review %>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="bookSelect" class="form-label"
+              >เลือกหนังสือที่ต้องการรีวิว</label
+            >
+            <%# dropdown เลือกจากรายการหนังสือ bookshelf %>
+            <select class="form-select" id="bookSelect" name="book_id" required>
+              <option value="" disabled selected>
+                --- กรุณาเลือกหนังสือจากชั้นของคุณ ---
+              </option>
+              <%# เช็คว่ามีหนังสือใน bookshelf มั้ย %>
+              <% if (bookshelf && bookshelf.length > 0) { %> <%
+              bookshelf.forEach(book => { %>
+              <option value="<%= book.book_id %>">
+                <%= book.title %> - <%= book.author %>
+              </option>
+              <% }); %> <% } else { %>
+              <option value="" disabled>
+                คุณยังไม่มีหนังสือในชั้น (เพิ่มหนังสือก่อน)
+              </option>
+              <% } %>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label"
+              >ความคิดเห็นของคุณ (สูงสุด 500 ตัวอักษร)</label>
+            <textarea <%# ช่องสำหรับกรอกเนื้อหา %>
+              name="content"
+              class="form-control"
+              rows="4"
+              maxlength="500"
+              required
+            ></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            ยกเลิก
+          </button>
+          <button type="submit" class="btn btn-primary">โพสต์รีวิว</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const hash = window.location.hash; // ดึงค่า hash จาก url
+    if (hash) {
+      const tab = new bootstrap.Tab(
+        document.querySelector(`button[data-bs-target="${hash}"]`)
+        // สร้าง tab สำหรับที่มี data-bs-target ตรงกับ hash
+      );
+      tab.show();
+    }
+  });
+</script>
+
+<%- include('partials/footer') %>

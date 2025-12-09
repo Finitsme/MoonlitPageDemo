@@ -1,0 +1,59 @@
+<%- include('partials/header', { title: "เข้าสู่ระบบ | MOONLITPAGE" }) %>
+  <body class="login-body">
+    
+    <div class="login-card-wrapper">
+        <div class="login-card"> 
+          
+            <div class="card-sidebar">
+                <div class="sidebar-logo">*</div>
+                <div class="sidebar-content">
+                    <p class="sidebar-small-text">MOONLIT PAGES</p>
+                    <h2>เข้าถึงคลังหนังสือส่วนตัว<br>ของคุณได้ง่ายๆ</h2>
+                </div>
+            </div>
+
+            <div class="card-form-panel">
+                <div class="form-panel-header">
+                    <div class="logo-desktop">*</div>
+                    <h1>เข้าสู่ระบบ</h1>
+                    <p class="subtitle">จัดการหนังสือและรีวิวของคุณอย่างง่ายดาย</p>
+                </div>
+                
+                <% if (message) { %>
+                <div class="alert alert-warning text-center"><%= message %></div>
+                <% } %>
+    
+                <form class="login-form" action="/login" method="POST">
+                    
+                    <div class="mb-3 form-group-custom">
+                      <label class="form-label">อีเมล</label>
+                      <input type="email" name="email" class="form-control" required />
+                    </div>
+                    
+                    <div class="mb-3 form-group-custom">
+                      <label class="form-label">รหัสผ่าน</label>
+                      <input
+                        type="password"
+                        name="password"
+                        class="form-control"
+                        required
+                      />
+                      </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100 mt-4">เข้าสู่ระบบ</button>
+                </form>
+
+                <div class="footer-options">
+                    <div class="forgot-link">
+                        <a href="/forgot">ลืมรหัสผ่าน?</a> 
+                    </div>
+                    <div class="register-link">
+                        ยังไม่มีบัญชี? <a href="/register" class="signup-link">สมัครสมาชิก</a>
+                    </div>
+                </div>
+            </div> 
+
+        </div>
+    </div>
+  </body>
+</html>

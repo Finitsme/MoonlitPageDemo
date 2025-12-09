@@ -1,0 +1,733 @@
+/* ==================================== */
+/* 1. Global & Layout (การจัดวางหลัก) */
+/* ==================================== */
+
+body {
+    font-family: 'Prompt', sans-serif;
+}
+
+/* **Body: จัดการพื้นหลังหลักและจัดให้ Card อยู่ตรงกลาง** */
+body.login-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #f0f0f4; /* พื้นหลังสีเทาอ่อนมาก */
+  font-family: "Prompt", sans-serif;
+}
+
+/* **Wrapper: สำหรับ Card ทั้งหมด** */
+.login-card-wrapper {
+    /* ใช้สำหรับเงาหลักรอบๆ Card */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1); 
+    border-radius: 20px;
+    background-color: white; 
+}
+
+/* **Card หลัก: แบ่งเป็น 2 คอลัมน์** */
+.login-card {
+    display: flex;
+    max-width: 900px; /* ขนาดใหญ่ขึ้นตาม Reference */
+    border-radius: 20px;
+    overflow: hidden; /* ซ่อนสิ่งที่เกินขอบเขต */
+}
+
+/* ==================================== */
+/* 2. Sidebar (คอลัมน์ซ้าย: Gradient) */
+/* ==================================== */
+
+.card-sidebar {
+    width: 350px; /* กำหนดความกว้างเฉพาะ */
+    min-height: 500px; 
+    padding: 30px;
+    color: white;
+    position: relative;
+    background: linear-gradient(135deg, #0f1939 0%, #163390 100%);
+    backdrop-filter: blur(15px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.sidebar-logo {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 0.5;
+    color: white;
+    align-self: flex-start;
+}
+
+.sidebar-content h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-top: 5px;
+}
+
+.sidebar-small-text {
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+/* ==================================== */
+/* 3. Form Panel (คอลัมน์ขวา) */
+/* ==================================== */
+
+.card-form-panel {
+    padding: 50px 60px;
+    width: 100%;
+    max-width: 450px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* จัดให้อยู่ตรงกลางแนวตั้ง */
+}
+
+.form-panel-header {
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.form-panel-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.form-panel-header .subtitle {
+    color: #888;
+    font-size: 0.95rem;
+}
+
+.logo-desktop {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0f1939;
+    margin-bottom: 20px;
+}
+
+/* ==================================== */
+/* 4. Form Controls (Input & Button) */
+/* ==================================== */
+
+.form-group-custom .form-label {
+    font-weight: 600;
+    color: #333; /* Label สีดำ */
+    margin-bottom: 8px;
+    display: block;
+    font-size: 0.9rem;
+}
+
+.card-form-panel .form-control {
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    padding: 10px 15px;
+    height: 45px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    font-size: 1rem;
+    color: #333;
+}
+
+.card-form-panel .form-control:focus {
+    border-color: #163390;
+    box-shadow: 0 0 0 1px #163390;
+}
+
+/* ปุ่มหลัก */
+.btn-primary {
+    background-color: #163390;
+    border-color: #163390;
+    font-weight: 600;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+}
+
+.btn-primary:hover {
+    background-color: #000000;
+    border-color: #000000;
+}
+
+/* ==================================== */
+/* 5. Footer Options & Links */
+/* ==================================== */
+
+.footer-options {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    font-size: 0.9rem;
+}
+
+.footer-options a {
+    color: #163390;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.footer-options .signup-link {
+    font-weight: 700; /* เน้นลิงก์สมัครสมาชิก */
+}
+
+.footer-options a:hover {
+    text-decoration: underline;
+}
+
+/* ปรับปรุงการจัดวางทั้งหมดให้อยู่ตรงกลางเมื่อหน้าจอเล็ก (เผื่อไว้) */
+@media (max-width: 576px) {
+    .container {
+        margin: 20px;
+        max-width: 90%;
+        padding: 20px;
+    }
+}
+
+/* ==================================== */
+/* 7. Register Page Specific Adjustments */
+/* ==================================== */
+
+/* Body: จัดให้ Register Card อยู่ตรงกลาง (สไตล์เดียวกันกับ Login) */
+body.register-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #f0f0f4; 
+  font-family: "Prompt", sans-serif;
+}
+
+/* ปรับความสูงของ Card หลักเมื่อฟอร์มยาวขึ้น */
+.login-card {
+  min-height: 650px;
+}
+
+/* ปรับระยะห่างระหว่าง Field ในฟอร์ม Register */
+.register-form .mb-3 {
+    margin-bottom: 18px !important; /* ลดระยะห่างระหว่างฟิลด์ลงเล็กน้อย */
+}
+
+/* ==================================== */
+/* 8. Forgot Password Page Styles */
+/* ==================================== */
+
+/* Body: จัดให้ Forgot Card อยู่ตรงกลางจอ (ใช้สไตล์เดียวกับ Login/Register) */
+body.forgot-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #f0f0f4; 
+  font-family: "Prompt", sans-serif;
+}
+
+/* ปุ่มส่งรหัสผ่านชั่วคราว (ใช้สีที่แตกต่างจากปุ่ม Login) */
+.btn-forgot {
+    /* ใช้สี Warning หรือสีเข้มที่แตกต่าง */
+    background-color: #e3af64 !important; /* สีส้มอมเหลือง */
+    border-color: #e3af64 !important;
+    color: #ffffff !important; /* ข้อความสีดำ */
+    font-weight: 700 !important;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+}
+
+.btn-forgot:hover {
+    background-color: #000000 !important;
+    border-color: #000000 !important;
+}
+
+
+/* ========== Navbar ========== */
+.navbar-custom {
+  background-color: #0f1939;
+  padding: 15px 0;
+  font-family: "Prompt", sans-serif;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-custom .navbar-brand {
+  color: #f8f7f5;
+  font-weight: bold;
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.navbar-custom .navbar-brand:hover {
+  color: #e3af64;
+}
+
+.navbar-custom .nav-link {
+  color: #f8f7f5 !important;
+  margin: 0 15px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.navbar-custom .nav-link:hover {
+  color: #e3af64 !important;
+  transform: translateY(-2px);
+}
+
+/* Toggle */
+.navbar-toggler {
+  border: none;
+}
+
+/* ========== Carousel / Banner ========== */
+.carousel-item img {
+  height: 500px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.banner {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+}
+
+/* ========== Welcome Section ========== */
+.welcome-section {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 40px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-top: -50px;
+  position: relative;
+  z-index: 10;
+  font-family: "Prompt", sans-serif;
+  text-align: center;
+}
+
+.welcome-section h2 {
+  color: #0f1939;
+  font-weight: 700;
+  margin-bottom: 30px;
+  font-size: 2.2rem;
+}
+
+.welcome-section p {
+  color: #555;
+  line-height: 1.6;
+  font-size: 1.1rem;
+}
+
+.welcome-section .lead {
+  color: #444;
+  font-weight: 500;
+}
+
+.feature-icon {
+  color: #0f1939;
+  margin-right: 10px;
+}
+
+.feature-item {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.feature-item strong {
+  color: #0f1939;
+}
+
+.feature-item span {
+  font-size: 1.05rem;
+}
+
+.welcome-section p:last-child {
+  color: #0f1939;
+  font-weight: 500;
+  font-style: italic;
+  margin-top: 25px;
+}
+
+/* ========== Footer ========== */
+.footer {
+  background-color: #0f1939;
+  color: #f8f7f5;
+  padding: 60px 0 20px;
+  margin-top: 80px;
+  font-family: "Prompt", sans-serif;
+}
+
+.footer h5 {
+  color: #e3af64;
+  font-weight: 600;
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+}
+
+.footer p,
+.footer a {
+  color: #d8d8d8;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer a:hover {
+  color: #e3af64;
+}
+
+.footer-links {
+  list-style: none;
+  padding-left: 0;
+}
+
+.footer-links li {
+  margin-bottom: 10px;
+}
+
+.social-icons a {
+  display: inline-block;
+  margin-right: 15px;
+  font-size: 1.5rem;
+  color: #f8f7f5;
+  transition: all 0.3s ease;
+}
+
+.social-icons a:hover {
+  color: #e3af64;
+  transform: translateY(-3px);
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 20px;
+  margin-top: 30px;
+  text-align: center;
+  color: #d8d8d8;
+  font-size: 0.9rem;
+}
+
+.contact-info i {
+  margin-right: 10px;
+  color: #e3af64;
+}
+
+/* ========== Book Page ========== */
+
+/* --- Layout --- */
+.container {
+  max-width: 1200px;
+}
+
+/* --- Title & Description --- */
+h1 {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.text-muted {
+  color: #6c757d !important;
+}
+
+/* --- Book Card --- */
+.card {
+  border: none;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  background-color: #ffffff;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+.card-img-top {
+  height: 240px;
+  object-fit: cover;
+  border-bottom: 2px solid #f8f9fa;
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+}
+
+.card-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.card-text {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+}
+
+/* --- Button --- */
+.card .btn {
+  font-size: 0.9rem;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.card .btn:hover {
+  transform: scale(1.05);
+}
+
+/* --- Modal --- */
+.modal-content {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+  background-color: #fdf8ef;
+  border-bottom: 1px solid #f1e4c3;
+}
+
+.modal-title {
+  font-weight: 600;
+  color: #4a3f35;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-body img {
+  border-radius: 10px;
+}
+
+.modal-body p {
+  margin-bottom: 0.5rem;
+}
+
+.modal-body strong {
+  color: #2c3e50;
+}
+
+/* ส่วนของ Modal Footer */
+.modal-footer button,
+.modal-footer a.btn,
+.modal-footer form button {
+    /* **สำคัญ:** กำหนดความกว้างคงที่เพื่อให้ปุ่มมีขนาดเท่ากัน */
+    height: 40px; 
+    text-align: center; 
+
+    padding-left: 0.5rem !important; 
+    padding-right: 0.5rem !important;
+    /* ปรับ margin ด้านข้างถ้าจำเป็น */
+    margin-left: 10px !important; 
+}
+
+/* ปรับระยะห่างของปุ่มสุดท้ายให้ชิดขวาเล็กน้อย */
+.modal-footer {
+    justify-content: flex-end; /* จัดให้ปุ่มอยู่ด้านขวา */
+    padding: 15px 20px;
+}
+
+/* ========== Back to Top Button ========== */
+.back-to-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #0f1939;
+  color: #f8f7f5;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.back-to-top:hover {
+  background-color: #e3af64;
+  color: #0f1939;
+}
+
+/* ========== Contact Page ========== */
+
+.contact-page-content {
+    background-color: #f8f8f8; /* พื้นหลังสว่าง */
+}
+
+.contact-title {
+    color: #0f1939; /* น้ำเงินเข้ม */
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.contact-subtitle {
+    color: #444;
+}
+
+/* Card Styling: Form and Info */
+.contact-form-card,
+.contact-info-card {
+    background-color: #ffffff; 
+    border: none;
+    border-radius: 12px; /* มุมโค้งมนมากขึ้น */
+    box-shadow: 0 8px 25px rgba(15, 25, 57, 0.1); /* เงาที่ดูดี */
+    transition: transform 0.3s;
+}
+
+.contact-form-card:hover,
+.contact-info-card:hover {
+    transform: translateY(-3px); /* ยกขึ้นเล็กน้อยเมื่อชี้ */
+}
+
+.card-title-contact {
+    color: #0f1939;
+    font-weight: 700;
+    border-bottom: 3px solid #e3af64; /* เส้นใต้สีทองหนา */
+    padding-bottom: 8px;
+    margin-bottom: 20px !important;
+    display: inline-block;
+}
+
+/* Form Styling */
+.form-label {
+    font-weight: 600;
+    color: #0f1939;
+    margin-bottom: 4px;
+}
+
+.form-control {
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    padding: 10px 15px;
+}
+
+.form-control:focus {
+    border-color: #0f1939;
+    box-shadow: 0 0 0 0.2rem rgba(227, 175, 100, 0.5); /* เงาสีทองอ่อนๆ */
+}
+
+/* Submit Button */
+.btn-contact-submit {
+    background-color: #e3af64; /* ปุ่มสีทอง */
+    color: #0f1939; /* ข้อความสีน้ำเงินเข้ม */
+    border: none;
+    padding: 12px 25px;
+    font-size: 1.1em;
+    font-weight: 700;
+    border-radius: 8px;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+.btn-contact-submit:hover {
+    background-color: #d19f5a; /* สีทองเข้มขึ้นเมื่อชี้ */
+    color: #0f1939;
+    transform: translateY(-1px);
+}
+
+/* Contact Info Styling */
+.contact-info-card {
+    background-color: #0f1939; /* พื้นหลังสีน้ำเงินเข้ม */
+    color: #fff; /* ตัวอักษรสีขาว */
+}
+
+.contact-info-card .card-title-contact {
+    color: #e3af64; /* ชื่อหัวข้อสีทอง */
+    border-color: #e3af64;
+}
+
+.contact-detail {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+.contact-detail p {
+    color: #ccc; /* ข้อความรองสีอ่อนลง */
+}
+
+.contact-info-card strong {
+    color: #ffffff; /* ข้อความหลักสีขาว */
+}
+
+.contact-icon {
+    color: #e3af64; /* ไอคอนสีทองเด่นชัด */
+    font-size: 1.5em;
+    padding-top: 3px;
+}
+
+/* Social Icons */
+.contact-social a {
+    color: #fff; /* ไอคอนสีขาวบนพื้นหลังเข้ม */
+    font-size: 1.6em;
+    margin-right: 18px;
+    transition: color 0.3s;
+}
+
+.contact-social a:hover {
+    color: #e3af64; /* เปลี่ยนเป็นสีทองเมื่อชี้ */
+}
+
+/* ========== Utility / Responsiveness ========== */
+@media (max-width: 768px) {
+  .navbar-custom .nav-link {
+    margin: 10px 0;
+  }
+
+  .welcome-section {
+    padding: 25px;
+  }
+
+  .banner {
+    height: 250px;
+  }
+
+  .card-img-top {
+    height: 200px;
+  }
+
+  .modal-body {
+    text-align: center;
+  }
+
+  .modal-body img {
+    margin-bottom: 1rem;
+  }
+}
+
+/*feed*/
+/* ตรวจสอบว่าสไตล์ btn-primary ถูกกำหนดสีหลักของธีม */
+.modal-footer .btn-custombook {
+    background-color: #5461c4; /* สีม่วง/น้ำเงินหลัก */
+    border-color: #5461c4;
+    color: #ffffff;
+    height: 37px;
+    /* ... อื่นๆ ... */
+}
+
+.modal-footer .btn-custombook:hover {
+    background-color: #e3af64;
+    border-color: #e3af64;
+}
+.modal-footer .btn-customfeed {
+    background-color: #5461c4; /* สีม่วง/น้ำเงินหลัก */
+    border-color: #5461c4;
+    color: #ffffff;
+    height: 40px;
+    /* ... อื่นๆ ... */
+}
+
+.modal-footer .btn-customfeed:hover {
+    background-color: #e3af64; 
+    border-color: #e3af64;
+}

@@ -1,0 +1,322 @@
+<%- include('partials/header', { title: "ค้นหาหนังสือ | MOONLITPAGE" }) %>
+<%- include('partials/navbar', { user: locals.user }) %>
+
+  <main class="container py-5">
+    <h1 class="text-center mb-3">ค้นหารายการหนังสือ</h1>
+    
+    <div class="row mb-4 justify-content-center">
+        <div class="col-md-6">
+            <form action="/book" method="GET" id="searchForm">
+                <div class="input-group">
+                    <input 
+                      type="search" 
+                      name="q" 
+                      id="searchInput" 
+                      class="form-control" 
+                      placeholder="ค้นหาชื่อหนังสือ, ผู้แต่ง, หรือคำสำคัญ..." 
+                      value="<%= locals.searchQuery || '' %>"
+                    >
+                    <button class="btn btn-primary" type="submit">ค้นหา</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="text-center mb-5">
+        <h4 class="mb-3">เลือกดูตามหมวดหมู่:</h4>
+
+        <div class="dropdown d-inline-block mx-2">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="mainCategoryDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                หมวดหมู่หลัก
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="mainCategoryDropdown" id="mainCategoryMenu">
+                </ul>
+        </div>
+
+        <div class="dropdown d-inline-block mx-2">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="subCategoryDropdown" data-bs-toggle="dropdown" aria-expanded="false" disabled>
+                หัวข้อย่อย
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="subCategoryDropdown" id="subCategoryMenu">
+                <li><a class="dropdown-item" href="#">เลือกหมวดหมู่หลักก่อน</a></li>
+            </ul>
+        </div>
+        
+        <style>
+            .btn-primary { 
+              background-color: #0f1939; 
+              border-color: #0f1939; 
+              color: #ffffff; 
+            }
+            .btn-primary:hover { 
+              background-color: #0d1633; 
+              border-color: #0d1633; 
+            }
+            .btn-secondary { 
+                background-color: #0f1939; 
+                border-color: #0f1939; 
+                color: #ffffff; 
+            }
+            .btn-secondary:hover {
+                background-color: #0d1633; 
+                border-color: #0d1633; 
+            }
+            .dropdown-item.active { 
+                background-color: #e3af64 !important;
+                color: #fff !important;
+            }
+        </style>
+    </div>
+    <% if (books.length > 0) { %>
+        <p class="text-center text-muted mb-5">
+            แสดงผลลัพธ์ **<%= books.length %>** รายการ สำหรับคำค้นหา: **<%= locals.searchQuery || 'ค่าเริ่มต้น' %>**
+        </p>
+    <% } %>
+
+    <div class="row g-4">
+      <% if (books.length === 0) { %>
+        <div class="col-12 text-center text-muted">
+          <p>ไม่พบหนังสือสำหรับคำค้นหานี้ หรือกรุณาลองค้นหาใหม่</p>
+        </div>
+      <% } %>
+
+      <% books.forEach(book => { %>
+        <div class="col-md-4 col-lg-3">
+          <div class="card h-100 shadow-sm">
+            <img
+              src="<%= book.cover_image || '/images/default-book.jpg' %>"
+              class="card-img-top"
+              alt="<%= book.title %>"
+            />
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title"><%= book.title %></h5>
+              <p class="card-text text-truncate"><%= book.author %></p>
+              <button
+                class="btn btn-outline-primary mt-auto"
+                data-bs-toggle="modal"
+                data-bs-target="#bookModal<%= book.id %>"
+              >
+                รายละเอียด
+              </button>
+            </div>
+            <style>
+              .btn-outline-primary { 
+                border-color: #0f1939 !important; 
+                color: #0f1939; 
+              }
+              .btn-outline-primary:hover { 
+                background-color: #0f1939 !important; 
+                color: #ffffff; 
+              }
+            </style>
+          </div>
+        </div>
+
+        <div
+          class="modal fade"
+          id="bookModal<%= book.id %>"
+          tabinjex="-1"
+          aria-labelledby="bookModalLabel<%= book.id %>"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5
+                  class="modal-title"
+                  id="bookModalLabel<%= book.id %>"
+                ><%= book.title %></h5>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                ></button>
+              </div>
+              <div class="modal-body row">
+                <div class="col-md-5 text-center mb-3 mb-md-0">
+                  <img
+                    src="<%= book.cover_image || '/images/default-book.jpg' %>"
+                    class="img-fluid shadow-sm rounded"
+                    alt="<%= book.title %>"
+                  />
+                </div>
+                <div class="col-md-7">
+                  <p><strong>ผู้แต่ง:</strong> <%= book.author %></p>
+                  <p><strong>หมวดหมู่:</strong> <%= book.category || 'ไม่ระบุ' %></p>
+                  <p><strong>สำนักพิมพ์:</strong> <%= book.publisher || 'ไม่ระบุ' %></p>
+                  <p><strong>รายละเอียด:</strong></p>
+                  <p><%= book.description || 'ไม่มีรายละเอียดเพิ่มเติม' %></p>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  ปิด
+                </button>
+                
+                <form action="/bookshelf/add" method="POST" class="m-0">
+                    <input type="hidden" name="book_id" value="<%= book.id %>">
+                    <input type="hidden" name="title" value="<%= book.title %>">
+                    <input type="hidden" name="author" value="<%= book.author %>">
+                    <button type="submit" class="btn btn-custombook">
+                        <i class="fas fa-plus-circle"></i> เพิ่มเข้าชั้นหนังสือ
+                    </button>
+                </form>
+                
+                <a href="/reviews?book_id=<%= book.id %>" class="btn btn-outline-info">
+                    <i class="fas fa-comments"></i> ดูรีวิว
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </main>
+
+  <%- include('partials/footer') %>
+
+  <script type="module">
+    // นำเข้าข้อมูลหมวดหมู่จากไฟล์แยก 
+    import { categoriesData } from '/categories.js'; 
+
+    const mainCategoryButton = document.getElementById('mainCategoryDropdown');
+    const mainCategoryMenu = document.getElementById('mainCategoryMenu');
+    const subCategoryButton = document.getElementById('subCategoryDropdown');
+    const subCategoryMenu = document.getElementById('subCategoryMenu');
+    const searchInput = document.getElementById('searchInput');
+
+    // ตัวแปรที่ใช้สำหรับ Persistence และ Query
+    let currentMainCategoryQuery = ''; 
+    let currentMainCategoryName = ''; 
+    let currentSubCategoryName = ''; 
+
+    // ฟังก์ชัน 1: โหลดหมวดหมู่หลักและตั้งค่า Persistence
+    function loadMainCategories() {
+      // โหลดค่าจาก localStorage (ถาวร)
+      currentMainCategoryName = localStorage.getItem('mainCatName') || 'เลือกหมวดหมู่หลัก';
+      currentSubCategoryName = localStorage.getItem('subCatName') || 'หัวข้อย่อย';
+
+      mainCategoryMenu.innerHTML = ''; 
+      mainCategoryButton.textContent = currentMainCategoryName; 
+      subCategoryButton.textContent = currentSubCategoryName; 
+      
+      subCategoryButton.disabled = true; // ปิดเริ่มต้น
+
+      // ตรวจสอบและโหลด Subcategories เมื่อหน้าโหลดซ้ำ
+      if (currentMainCategoryName !== 'เลือกหมวดหมู่หลัก') {
+        const selectedCat = categoriesData.find(cat => cat.name === currentMainCategoryName);
+        
+        if (selectedCat && selectedCat.subcategories && selectedCat.subcategories.length > 0) {
+            subCategoryButton.disabled = false;
+            currentMainCategoryQuery = selectedCat.query || '';
+            updateSubCategories(selectedCat);
+        }
+      }
+
+      // เติมรายการใน Dropdown หลักและกำหนด Event Listener
+      categoriesData.forEach(cat => {
+        const item = document.createElement('li');
+        const link = document.createElement('a');
+        link.className = 'dropdown-item';
+        link.href = '#'; 
+        link.textContent = cat.name;
+        link.setAttribute('data-key', cat.key);
+        
+        link.addEventListener('click', (e) => {
+            e.preventDefault(); //หยุดยั้งไม่ให้ฟอร์มส่งข้อมูลและรีโหลดหน้าจอ
+            mainCategoryButton.textContent = cat.name; 
+            
+            // บันทึกชื่อหมวดหมู่หลักใน localStorage
+            localStorage.setItem('mainCatName', cat.name);
+            localStorage.removeItem('subCatName'); // เคลียร์ชื่อย่อยเมื่อเลือกหลักใหม่
+            
+            // ค้นหาด้วย Query หลักทันที
+            searchInput.value = cat.query; 
+            document.getElementById('searchForm').submit();
+            
+            // เตรียม Dropdown ย่อยสำหรับการเลือกครั้งถัดไป
+            if (cat.subcategories && cat.subcategories.length > 0) {
+                currentMainCategoryQuery = cat.query || ''; 
+                updateSubCategories(cat);
+                
+                subCategoryButton.disabled = false;
+                subCategoryButton.textContent = 'เลือกหัวข้อย่อย...'; 
+            } else {
+                // สำหรับหมวดหมู่ที่ไม่มีหัวข้อย่อย
+                currentMainCategoryQuery = '';
+                subCategoryButton.disabled = true;
+                subCategoryButton.textContent = 'หัวข้อย่อย';
+                subCategoryMenu.innerHTML = '<li><a class="dropdown-item" href="#">เลือกหมวดหมู่หลักก่อน</a></li>';
+            }
+        });
+
+        item.appendChild(link);
+        mainCategoryMenu.appendChild(item);
+      });
+    }
+
+    // ฟังก์ชันสำหรับอัปเดต Dropdown หัวข้อย่อย
+    function updateSubCategories(selectedCategory) {
+        subCategoryMenu.innerHTML = '';  //ล้างเนื้อหาภายใน element
+        
+        selectedCategory.subcategories.forEach(subcat => {
+            const item = document.createElement('li');
+            const link = document.createElement('a');
+            link.className = 'dropdown-item';
+            link.href = '#';
+            link.textContent = subcat.name;
+            
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+            
+                // บันทึกชื่อหัวข้อย่อยใน localStorage
+                localStorage.setItem('subCatName', subcat.name); 
+
+                // ใช้ Query ย่อยเท่านั้น (ไม่รวม Query หลัก)
+                const subQuery = subcat.query.trim();
+                
+                searchInput.value = subQuery; // ส่ง Query ย่อย
+                document.getElementById('searchForm').submit();
+                subCategoryButton.textContent = subcat.name;
+            });
+
+            item.appendChild(link);
+            subCategoryMenu.appendChild(item);
+        });
+    }
+
+    // เริ่มต้นโหลดเมื่อหน้าเว็บโหลดเสร็จ
+    document.addEventListener('DOMContentLoaded', loadMainCategories);
+    
+    // Logic การรีเซ็ต Dropdown เมื่อ Modal ถูกปิด (ตามที่คุณต้องการ)
+    document.addEventListener('hidden.bs.modal', function (event) {
+        
+        // 1. สั่งลบค่าที่ค้างอยู่ใน localStorage
+        localStorage.removeItem('mainCatName');
+        localStorage.removeItem('subCatName');
+        
+        // 2. อัปเดต UI Dropdown ทันทีเพื่อให้แสดงค่าเริ่มต้น
+        mainCategoryButton.textContent = 'เลือกหมวดหมู่หลัก';
+        subCategoryButton.textContent = 'หัวข้อย่อย';
+        subCategoryButton.disabled = true;
+        subCategoryMenu.innerHTML = '<li><a class="dropdown-item" href="#">เลือกหมวดหมู่หลักก่อน</a></li>';
+        
+        // 3. รีเซ็ตค่าในช่องค้นหา (ไม่จำเป็นต้องสั่ง แต่เพื่อความสมบูรณ์)
+        searchInput.value = '';
+    });
+    
+    // Logic การเคลียร์ localStorage เมื่อค้นหาผ่านช่อง Search ธรรมดา
+    document.getElementById('searchForm').addEventListener('submit', function() {
+        const isCategorySearch = (mainCategoryButton.textContent !== 'เลือกหมวดหมู่หลัก');
+        
+        // ถ้าผู้ใช้พิมพ์ในช่องค้นหาเอง ไม่ใช่เลือกจาก Dropdown ให้เคลียร์ค่าที่ค้างไว้
+        if (!isCategorySearch && searchInput.value) {
+            localStorage.removeItem('mainCatName');
+            localStorage.removeItem('subCatName');
+        }
+    });
+  </script>

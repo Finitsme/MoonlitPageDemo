@@ -1,0 +1,47 @@
+<%- include('partials/header', { title: "ลืมรหัสผ่าน | Moonlit Pages" }) %>
+  <body class="forgot-body"> <div class="login-card-wrapper">
+        <div class="login-card"> 
+          
+            <div class="card-sidebar">
+                <div class="sidebar-logo">*</div>
+                <div class="sidebar-content">
+                    <p class="sidebar-small-text">MOONLIT PAGES</p>
+                    <h2>ได้รับรหัสผ่านใหม่ทางอีเมลอย่างง่ายดาย</h2>
+                </div>
+            </div>
+
+            <div class="card-form-panel">
+                <div class="form-panel-header">
+                    <div class="logo-desktop">*</div>
+                    <h1>ลืมรหัสผ่าน</h1>
+                    <p class="subtitle">กรุณากรอกอีเมลที่ลงทะเบียนไว้</p>
+                </div>
+                
+                <% if (message) { %>
+                <div class="alert alert-warning text-center"><%= message %></div>
+                <% } %>
+    
+                <form action="/forgot" method="POST">
+                    <div class="mb-3 form-group-custom">
+                      <label class="form-label">กรอกอีเมลของคุณ</label>
+                      <input type="email" name="email" class="form-control" required />
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100 mt-4 btn-forgot">
+                      ส่งรหัสผ่านชั่วคราว
+                    </button>
+                </form>
+
+                <div class="footer-options">
+                    <div class="forgot-link">
+                        </div>
+                    <div class="register-link">
+                        <a href="/login">กลับไปหน้าเข้าสู่ระบบ</a>
+                    </div>
+                </div>
+            </div> 
+
+        </div>
+    </div>
+  </body>
+</html>
